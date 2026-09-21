@@ -3,6 +3,10 @@ title: 'Markdown Style Guide'
 description: 'Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.'
 pubDate: 'Jun 19 2024'
 heroImage: '../../assets/blog-placeholder-1.jpg'
+
+author: "James Keat"
+biography: "James Keat is a determined journalist known for his clear and thoughtful reporting. He specializes in local affairs and enjoys uncovering stories that often go unnoticed."
+authorImage: '../../assets/JamesKeat.jpg'
 ---
 
 Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.
