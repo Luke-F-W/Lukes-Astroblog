@@ -1,0 +1,23 @@
+name: CI
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: cicd
+        uses: actions/checkout@v4
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - name: install dependencies
+        run: npm ci
+      - name: testing and checks
+        run: |
+          npm run test:unit
+          npm run lint
+          npm run check
