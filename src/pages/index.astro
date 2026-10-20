@@ -1,5 +1,22 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Weathie</h1>
+			<h2>Your go to weather tracker</h2>
+			<p>
+
 				Welcome to <strong>Weathie</strong>, a weather project focused on keeping you
 				informed about the weather across Ireland.
 			</p>
@@ -9,6 +26,18 @@ import BaseHead from '../components/BaseHead.astro';
 			</p>
         
 			<ul>
+				<li>Check the latest weather forecast for locations across Ireland</li>
+				<li>Keep up to date with storms and severe weather</li>
+				<li>View current weather warnings and alerts</li>
+				<li>See upcoming weather conditions and forecasts</li>
+				<li>Stay informed about changing weather across the country</li>
+			</ul>
+
+			<p>
+				Whether you're planning a trip, heading to work, or simply wondering what the
+				weather has in store, Weathie makes it easier to keep an eye on conditions
+				across Ireland.
+			</p>
 
 			<p>
 				From sunny days to heavy rain, strong winds, and approaching storms, Weathie
