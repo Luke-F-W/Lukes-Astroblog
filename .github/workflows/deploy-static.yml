@@ -1,7 +1,7 @@
 name: Deploy Static Site via AWS CDK
 on:
   push:
-    branches: [main]
+    branches: [feat/add-s3-cloudfront-stack]
 
 jobs:
   deploy:
