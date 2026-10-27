@@ -13,6 +13,7 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD wget -q -O /dev/null http://127.0.0.1:4321/api/health || exit 1
 CMD wget --no-verbose --tries=1 --spider http://localhost:4321/api/health || exit 1
 EXPOSE 4321
 CMD ["node", "./dist/server/entry.mjs"]

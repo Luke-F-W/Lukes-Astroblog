@@ -12,7 +12,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: 'npm'
       - name: install dependencies
         run: npm ci
@@ -22,3 +22,16 @@ jobs:
           npm run lint
           npm run check
           npm run build
+
+      - name: build docker
+        run: docker build -t astro-test .
+
+      - name: run docker
+        run: docker run -d --name app -p 4321:4321 astro-test
+
+      - name: test health endpoint
+        run: curl -fs --retry 15 --retry-delay 5 --retry-all-errors http://localhost:4321/api/health
+        
+      - name: show container logs
+        if: failure()
+        run: docker logs app
