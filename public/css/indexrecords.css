@@ -1,0 +1,513 @@
+    /*Index*/
+    .seatrow  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin: 16px auto 32px;
+    }
+
+    .seatrow .legend  {
+    margin: 0;
+    }
+
+    .seatrow .legend div  {
+    justify-content: flex-start;
+    }
+
+    .seats  {
+    text-align: center;
+    }
+
+    .seatmap  {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    max-width: 760px;
+    margin: 0 auto;
+    }
+
+    .seatmap span  {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    transition: transform 0.15s;
+    }
+
+    .seatmap span:hover  {
+    transform: scale(1.4);
+    z-index: 1;
+    }
+
+    .seatmap span:hover::after  {
+    content: attr(data-party);
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    }
+
+    .legend  {
+    margin: 16px auto 32px;
+    }
+
+    .legend div  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 4px 0;
+    }
+
+    .swatch  {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    display: inline-block;
+    }
+
+    .home {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 28px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1.05fr;
+      align-items: center;
+      gap: 48px;
+    }
+
+    .hero h1 {
+      margin: 0 0 20px;
+      font-size: clamp(36px, 5vw, 54px);
+      line-height: 1.12;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #d3d9d3;
+      font-size: 17px;
+      line-height: 1.8;
+      text-align: left;
+    }
+
+    .hero img {
+      display: block;
+      width: 100%;
+      height: 340px;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero .center {
+      width: auto;
+      margin: 28px 0 0;
+    }
+
+    @media (max-width: 760px) {
+      .home {
+        padding: 32px 20px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+
+      .hero img {
+        height: clamp(210px, 48vw, 320px);
+      }
+    }
+@font-face {
+  font-family: 'SourceCodePro';
+  src: url('../icons/SourceCodePro.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: rgb(32, 32, 32);
+  font-family: 'SourceCodePro', monospace, sans-serif;
+  color: white;
+}
+
+.btn {
+    display: inline-block;
+    background-color: rgb(97, 146, 100);
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 4px;
+    margin-top: 4px;
+}
+
+.center {
+  margin: 0 auto;
+  width: fit-content;
+  padding: 10px;
+}
+
+.btn:hover {
+    color: rgb(4, 113, 255);
+    transform: translateY(-5px);
+}
+h1.body-title {
+  font-size: 35px;
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.paragraph {
+  font-size: 20px;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 40px auto;
+}
+
+
+a:not(.btn), a:not(.btn):visited, a:not(.btn):active {
+  color: #8ab4f8;
+}
+
+
+.seatmap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.seatmap span {
+  display: inline-block;
+  position: relative;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  visibility: visible;
+  opacity: 1;
+}
+
+/*record searcher pages*/
+.searchpanel {
+	/*area above records with searchbar, dropdowns, next prev page etc...*/
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 0 20px;
+	position: relative;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 15vh;
+	height: auto;
+	background-color: rgb(54, 54, 54);
+	flex-wrap: wrap;
+}
+
+
+.resultspanel {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	min-height: 85vh;
+}
+
+/* Detail page (lobbyview) */
+.recordcard,
+.recordcard h3,
+.recordcard h5,
+.recordcard p,
+.recordcard span,
+.recordcard div {
+	color: white;
+}
+
+.billrecord h2 {
+  font-size: 2rem;
+  margin: 0 0 8px;
+}
+
+/* Search page (results from the API) */
+.billrecord,
+.billrecord h2,
+.billrecord p,
+.billrecord span,
+.resultspanel > p {
+	color: white;
+}
+
+.center-bottom p,
+#page-display {
+	color: white;
+}
+
+/* Member names under the photos (both pages) */
+.sponsor p {
+	color: white;
+}
+.searchbar span,
+.searchbar input {
+	color: white;
+}
+
+.btnsearch {
+	/*search button, also used for next and prev page buttons*/
+	background-color: rgb(97, 146, 100);
+	color: white;
+	padding: 12px 24px;
+	border-radius: 8px;
+	font-size: 16px;
+	text-align: center;
+	transition: all 0.3s ease;
+	cursor: pointer;
+}
+
+.btnsearch:hover {
+	/*when mouse is over buttons*/
+	color: rgb(4, 113, 255);
+	transform: translateY(-5px);
+}
+
+.searchbar {
+	/*green background on query pieces, used on everything in resultspanel*/
+	width: max-content;
+	display: flex;
+	align-items: center;
+	padding: 8px;
+	border-radius: 28px;
+	font-family: 'SourceCodePro';
+    margin-top: 8px;
+	background-color: rgb(43, 54, 44);
+}
+
+.searchbar-input {
+	/*input inside searchbar*/
+	background: transparent;
+	border: none;
+	outline: none;
+	font-family: 'SourceCodePro';
+	color: white;
+}
+
+
+.searchpanel form {
+	/*positioning for searchpanel*/
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	justify-content: center;
+	width: 100%;
+}
+
+
+.searchpanel *,
+.dropdown-menu *,
+.dropdown-menu label {
+	/*manages sizing of query sections*/
+	font-size: 18px;
+}
+
+
+.searchbar input[type="date"] {
+	/*makes dates input look good*/
+	color: rgb(216, 216, 216);
+	color-scheme: dark;
+}
+
+.dropdown {
+	/*manages positioning of dropdown*/
+	cursor: pointer;
+	position: relative;
+}
+
+.dropdown-menu {
+	/*the dropdown once clicked*/
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 10;
+	flex-direction: column;
+	gap: 6px;
+	padding: 8px;
+	background: rgb(43, 54, 44);
+	border-radius: 8px;
+	user-select: none;
+	pointer-events: all;
+}
+
+.dropdown.open .dropdown-menu {
+	/*manages display*/
+	display: flex;
+}
+
+.dropdown-menu label {
+	/*the text and tickbox in the dropdowns*/
+	display: flex;
+	gap: 6px;
+	color: white;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.center-bottom {
+	/*manages button positioning for next, prev and search buttons*/
+	position: static;
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	width: 100%;
+}
+
+.btnsearch:disabled {
+	/*disables buttons*/
+	opacity: 0.4;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.data-attribution {
+	width: 100%;
+	margin: 0;
+	color: #aaa;
+	font-size: 12px;
+	text-align: center;
+}
+
+.data-attribution a {
+	color: inherit;
+}
+
+.billrecord {
+	/*the card each record is on*/
+	margin: 8px 16px;
+	padding: 36px;
+	box-sizing: border-box;
+	background-color: rgb(54, 54, 54);
+}
+
+.sponsors {
+	/*container that all sponsors go into*/
+	display: flex;
+	gap: 16px;
+	flex-wrap: wrap;
+	margin-top: 8px;
+}
+
+.sponsor {
+	/*for each sponsor*/
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+
+.sponsor-img {
+	/*for each sponsor image*/
+	width: 90px;
+	height: 90px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.sponsor p {
+	/*<p> in sponsor*/
+	font-size: 12px;
+	text-align: center;
+	margin: 0;
+}
+
+
+.skeletonbillrecord {
+	/*card that skeleton stuff goes into*/
+	margin: 8px 16px;
+	padding: 36px;
+	box-sizing: border-box;
+	background-color: rgb(54, 54, 54);
+}
+
+.skeleton-title {
+	/*title for skeleton, top line*/
+	height: 28px;
+	width: 100%;
+	background-color: rgb(40, 40, 40);
+	margin-bottom: 12px;
+	border-radius: 2px;
+}
+
+.skeleton-p {
+	/*line that looks like paragraph*/
+	height: 16px;
+	width: 100%;
+	background-color: rgb(40, 40, 40);
+	margin-bottom: 8px;
+	border-radius: 2px;
+}
+
+.skeleton-short {
+	/*goes on bottom*/
+	height: 16px;
+	width: 25%;
+	background-color: rgb(40, 40, 40);
+	border-radius: 2px;
+}
+
+.skeleton-shorts {
+	/*container that holds the short lines*/
+	display: flex;
+	gap: 8px;
+}
+
+.skeletonbillrecord {
+	/*animation stuff for skeleton*/
+	animation: shimmer 1.5s ease-in-out infinite alternate;
+	animation-delay: calc(var(--i, 0) * 0.2s);
+	background: linear-gradient(135deg, rgb(40, 40, 40) 25%, rgb(74, 119, 85) 50%, rgb(40, 40, 40) 75%);
+	background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+	/*more animation stuff*/
+	0% {
+		background-position: 200% 0;
+	}
+
+	100% {
+		background-position: -200% 0;
+	}
+}
+
+summary {
+  cursor: pointer;
+  font-weight: bold;
+  margin: 8px 0;
+}

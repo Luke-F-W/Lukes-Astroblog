@@ -2,62 +2,177 @@
 import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
 import Layout from '../layouts/BlogPost.astro';
 ---
-
 <Layout
-	title="About Me"
-	description="Lorem ipsum dolor sit amet"
-	pubDate={new Date('August 08 2021')}
-	heroImage={AboutHeroImage}
+  title="Lobbying Record Search | Civie.ie"
+  description="Search lobbying records on Civie.ie."
+  pubDate={new Date('2026-01-01')}
 >
-	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-		labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-		viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
-		adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
-		et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
-		vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
-		sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
-	</p>
+  <link rel="stylesheet" href="/css/indexrecords.css" />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=search"
+  />
 
-	<p>
-		Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non
-		tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non
-		blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna
-		porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis
-		massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc.
-		Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis
-		bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra
-		massa massa ultricies mi.
-	</p>
+  <div class="searchpanel">
+    <form>
+      <div class="searchbar">
+        <span class="material-symbols-outlined">search</span>
+        <input class="searchbar-input" type="text" id="search-input" placeholder="Search..." />
+      </div>
 
-	<p>
-		Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl
-		suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet
-		nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae
-		turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem
-		dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat
-		semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus
-		vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum
-		facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam
-		vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla
-		urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
-	</p>
+      <div class="searchbar">
+        <span>Before:</span>
+        <input type="date" id="before-input" />
+      </div>
 
-	<p>
-		Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper
-		viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc
-		scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur
-		gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus
-		pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim
-		blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id
-		cursus metus aliquam eleifend mi.
-	</p>
+      <div class="searchbar">
+        <span>After:</span>
+        <input type="date" id="after-input" />
+      </div>
 
-	<p>
-		Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta
-		nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam
-		tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci
-		ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar
-		proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
-	</p>
+      <div class="center-bottom">
+        <button type="button" class="btnsearch" id="btn-prev">&lt;</button>
+        <p>Page Number: <span id="page-display">1</span></p>
+        <button type="button" class="btnsearch" id="btn-next">&gt;</button>
+      </div>
+
+      <button type="button" class="btnsearch" id="btn-search">Search</button>
+
+      <p class="data-attribution">
+        Lobbying data is sourced from the Register of Lobbying, maintained by
+        the Standards Commission. Visit
+        <a href="https://www.lobbying.ie/">Lobbying.ie</a>.
+      </p>
+    </form>
+  </div>
+
+  <div class="resultspanel"></div>
+
+<script>
+  let currentPage = 1;
+  let lobbying = [];
+
+  const searchInput = document.getElementById('search-input');
+  const beforeInput = document.getElementById('before-input');
+  const afterInput = document.getElementById('after-input');
+  const pageDisplay = document.getElementById('page-display');
+  const resultsPanel = document.querySelector('.resultspanel');
+  const prevButton = document.getElementById('btn-prev');
+  const nextButton = document.getElementById('btn-next');
+  const searchButton = document.getElementById('btn-search');
+
+  async function runSearch() {
+    const before = beforeInput.value || '2300-01-01';
+    const after = afterInput.value || '1900-01-01';
+
+    let url = `https://api.civie.ie/API/sector/lobby?page=${currentPage}`;
+    if (searchInput.value) url += `&q=${encodeURIComponent(searchInput.value)}`;
+    url += `&after=${after}&before=${before}`;
+
+    // Lock all buttons while we wait for the results
+    prevButton.disabled = true;
+    nextButton.disabled = true;
+    searchButton.disabled = true;
+
+    pageDisplay.textContent = currentPage;
+    showSkeleton();
+
+    try {
+      const jsondata = await fetch(url).then(res => res.json());
+      showResults(jsondata);
+
+      // Unlock the buttons now that results are on screen
+      const totalPages = Math.ceil(jsondata.records / jsondata.pagesize);
+      prevButton.disabled = currentPage <= 1;
+      nextButton.disabled = currentPage >= totalPages;
+    } catch (error) {
+      resultsPanel.innerHTML = '<p style="margin: 8px 16px;">Something went wrong. Please try again.</p>';
+    }
+
+    // Search is always unlocked at the end, even if the request failed
+    searchButton.disabled = false;
+  }
+
+  function showResults(jsondata) {
+    lobbying = jsondata.data;
+
+    resultsPanel.innerHTML = `
+      <p style="margin: 8px 16px;">${jsondata.records} results found</p>
+      ${lobbying.map((obj, index) => `
+        <div class="billrecord" data-index="${index}">
+          <h2>Details: ${obj['Specific Details'] || 'Nil Return'}</h2>
+          <p>Lobbied: ${parseNames(obj['DPOs Lobbied']) || 'Nil Return'}</p>
+          <div>${memberImages(obj)}</div>
+          <p>Lobbyist: ${obj['Lobbyist Name'] || ''}</p>
+          <p>
+            Date: ${obj['Date Published'] || ''}
+            | Person primarily doing the lobbying:
+            ${obj['Person primarily responsible for lobbying on this activity'] || 'Nil Return'}
+          </p>
+        </div>
+      `).join('')}
+    `;
+
+    resultsPanel.querySelectorAll('.billrecord').forEach(card => {
+      card.addEventListener('click', () => openLobby(Number(card.dataset.index)));
+    });
+  }
+
+  function openLobby(index) {
+    sessionStorage.setItem('selectedLobby', JSON.stringify(lobbying[index]));
+    window.location.href = '/lobbyview';
+  }
+
+  function showSkeleton() {
+    resultsPanel.innerHTML = Array(10).fill(`
+      <div class="skeletonbillrecord">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-p"></div>
+        <div class="skeleton-p"></div>
+        <div class="skeleton-p"></div>
+        <div class="skeleton-p"></div>
+        <div class="skeleton-p"></div>
+        <div class="skeleton-shorts">
+          <div class="skeleton-short"></div>
+          <div class="skeleton-short"></div>
+          <div class="skeleton-short"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function parseNames(str) {
+    if (!str) return '';
+    return str.split('::').map(entry => entry.split('|')[0]).join(', ');
+  }
+
+  function memberImages(obj) {
+    return (obj['MemberCodes'] ?? '').split('|').filter(Boolean).map(code => `
+      <img
+        class="sponsor-img"
+        src="https://data.oireachtas.ie/ie/oireachtas/member/id/${encodeURIComponent(code)}/image/thumb"
+        alt="${code}"
+        loading="lazy"
+      >
+    `).join('');
+  }
+
+  searchButton.addEventListener('click', () => {
+    currentPage = 1;
+    runSearch();
+  });
+
+  prevButton.addEventListener('click', () => {
+    currentPage--;
+    runSearch();
+  });
+
+  nextButton.addEventListener('click', () => {
+    currentPage++;
+    runSearch();
+  });
+
+  // Load the first page when the site opens
+  runSearch();
+</script>
 </Layout>

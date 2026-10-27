@@ -1,0 +1,150 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
+---
+<Layout
+  title="Lobbying Record Details | Civie.ie"
+  description="Details of a lobbying record on Civie.ie."
+  pubDate={new Date('2026-01-01')}
+>
+  <link rel="stylesheet" href="/css/indexrecords.css" />
+
+  <div class="recordcard">
+    <p class="data-attribution">
+      Lobbying data is sourced from the Register of Lobbying, maintained by the Standards Commission.
+      Visit <a href="https://www.lobbying.ie/">Lobbying.ie</a>.
+    </p>
+  </div>
+
+  <div class="recordcard">
+    <h3>Subject Matter:</h3>
+    <p id="submatter"></p>
+  </div>
+
+  <div class="recordcard">
+    <h3>Lobbyist:</h3>
+    <p id="lobbyist"></p>
+  </div>
+
+  <div class="recordcard" id="lobbied">
+    <h3>Lobbied Members:</h3>
+  </div>
+
+  <div class="recordcard">
+    <h3>Full List Of Lobbied Names</h3>
+    <p id="lobbiednames"></p>
+  </div>
+
+  <div class="recordcard">
+    <h3>About This Record:</h3>
+    <h5>Person Primarily Responsible For Lobbying:</h5>
+    <p id="primlobbyist"></p>
+    <h5>Specific Details:</h5>
+    <p id="specdetails"></p>
+    <h5>Intended Results:</h5>
+    <p id="intendresult"></p>
+    <h5>Lobbying Activities:</h5>
+    <p id="lobbact"></p>
+  </div>
+
+  <div class="recordcard">
+    <h3>Other Details:</h3>
+    <h5>Date:</h5>
+    <p id="date"></p>
+    <h5>Url:</h5>
+    <p id="url"></p>
+    <h5>Relevant Matter:</h5>
+    <p id="relmatter"></p>
+    <h5>Public Policy Area:</h5>
+    <p id="pubpolarea"></p>
+    <h5>Any DPOs or Former DPOs who carried out lobbying activities:</h5>
+    <p id="formerdpo"></p>
+    <h5>Current or Former DPOs:</h5>
+    <p id="formerdpoinfo"></p>
+    <h5>Was this a grassroots campaign:</h5>
+    <p id="grassrootcamp"></p>
+    <h5>Grassroots directive:</h5>
+    <p id="grassrootcampinfo"></p>
+    <h5>Was This Lobbying On Behalf Of A Client:</h5>
+    <p id="wasforclient"></p>
+    <h5>Clients:</h5>
+    <p id="clients"></p>
+  </div>
+
+  <script>
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    function parseNames2(str) {
+      return [...new Set(str.split('::').map(entry => entry.split('|')[0]))].join(', ');
+    }
+
+    function parseNames(str) {
+      return str.split('.')[0].replace(/-/g, ' ');
+    }
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value || 'N/A';
+    }
+
+    const obj = JSON.parse(sessionStorage.getItem('selectedLobby') || 'null');
+
+    if (!obj) {
+      document.querySelectorAll('.recordcard').forEach(card => (card.style.display = 'none'));
+      const msg = document.createElement('p');
+      msg.style.textAlign = 'center';
+      msg.innerHTML = 'No record selected. <a href="/lobbysearch">Go back to the search</a>.';
+      document.querySelector('.recordcard')?.before(msg);
+    } else {
+      setText('lobbyist', obj['Lobbyist Name']);
+      setText('lobbiednames', parseNames2(obj['DPOs Lobbied'] || ''));
+      setText('submatter', obj['Subject Matter']);
+      setText('primlobbyist', obj['Person primarily responsible for lobbying on this activity']);
+      setText('specdetails', obj['Specific Details']);
+      setText('intendresult', obj['Intended Results']);
+      setText('lobbact', obj['Lobbying Activities']);
+
+      setText('date', obj['Date Published']);
+      setText('relmatter', obj['Relevant Matter']);
+      setText('pubpolarea', obj['Public Policy Area']);
+      setText('formerdpo', obj['Any DPOs or Former DPOs who carried out lobbying activities']);
+      setText('formerdpoinfo', obj['Current or Former DPOs']);
+      setText('grassrootcamp', obj['Was this a grassroots campaign?']);
+      setText('grassrootcampinfo', obj['Grassroots directive']);
+      setText('wasforclient', obj['Was this lobbying done on behalf of a client?']);
+      setText('clients', obj['Client(s)']);
+
+      const urlEl = document.getElementById('url');
+      if (obj['Url']) {
+        const a = document.createElement('a');
+        a.href = 'https://' + obj['Url'].replace(/^https?:\/\//, '');
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = obj['Url'];
+        urlEl.appendChild(a);
+      } else {
+        urlEl.textContent = 'N/A';
+      }
+
+      const memberCodes = [...new Set((obj['MemberCodes'] ?? '').split('|').filter(Boolean))];
+      const lobbiedEl = document.getElementById('lobbied');
+
+      if (memberCodes.length === 0) {
+        lobbiedEl.style.display = 'none';
+      } else {
+        lobbiedEl.innerHTML =
+          '<h3>Lobbied:</h3><div class="sponsors">' +
+          memberCodes.map(code => {
+            const name = esc(parseNames(code));
+            const imageUrl = `https://data.oireachtas.ie/ie/oireachtas/member/id/${encodeURIComponent(code)}/image/thumb`;
+            return `
+              <div class="sponsor">
+                <img src="${imageUrl}" alt="${name}" class="sponsor-img" onerror="this.style.display='none'">
+                <p>${name}</p>
+              </div>`;
+          }).join('') +
+          '</div>';
+      }
+    }
+  </script>
+</Layout>
