@@ -38,7 +38,7 @@ jobs:
         with:
           task-definition: task-def.json
           container-name: Main
-          image: ${{ env.IMAGE }}
+          image: 341705376424.dkr.ecr.us-east-1.amazonaws.com/astro-blog:${{ github.sha }}
 
       - uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
