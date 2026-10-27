@@ -5,14 +5,14 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: cicd
         uses: actions/checkout@v4
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: 'npm'
       - name: install dependencies
         run: npm ci
@@ -21,3 +21,4 @@ jobs:
           npm run test:unit
           npm run lint
           npm run check
+          npm run build

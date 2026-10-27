@@ -7,49 +7,212 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>Weathie</h1>
-			<h2>Your go to weather tracker</h2>
-			<p>
+<head>
+  <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  <link rel="stylesheet" href="/css/indexrecords.css">
+</head>
+<body>
+  <Header />
 
-				Welcome to <strong>Weathie</strong>, a weather project focused on keeping you
-				informed about the weather across Ireland.
-			</p>
-			<p>
-				Weathie provides up-to-date forecasts, storm information, and weather warnings
-				to help you understand what conditions are expected in your area.
-			</p>
-        
-			<ul>
-				<li>Check the latest weather forecast for locations across Ireland</li>
-				<li>Keep up to date with storms and severe weather</li>
-				<li>View current weather warnings and alerts</li>
-				<li>See upcoming weather conditions and forecasts</li>
-				<li>Stay informed about changing weather across the country</li>
-			</ul>
+  <main class="home">
+    <section class="about-page">
+      <h2>About this page</h2>
+      <p>
+        Civie.ie brings together Irish lobbying records
+		to help you understand the people, organisations and
+        discussions shaping political decisions in Ireland.
+      </p>
+    </section>
 
-			<p>
-				Whether you're planning a trip, heading to work, or simply wondering what the
-				weather has in store, Weathie makes it easier to keep an eye on conditions
-				across Ireland.
-			</p>
+    <section class="hero" aria-labelledby="home-title">
+      <div>
+        <h1 id="home-title">A clearer view of lobbying in Ireland.</h1>
+      </div>
+      <img src="/icons/dail.png" alt="The historic Leinster House parliament building in Dublin">
+    </section>
 
-			<p>
-				From sunny days to heavy rain, strong winds, and approaching storms, Weathie
-				brings the information you need together in one place.
-			</p>
-		</main>
-		<Footer />
-		<script>
-			import '../components/weatherobtainer.js';
-		</script>
+    <section class="seats">
+      <h2>Dáil</h2>
+      <div class="seatmap" id="dail"></div>
+      <div class="seatrow">
+        <canvas id="dail-pie" width="160" height="160"></canvas>
+        <div class="legend" id="dail-legend"></div>
+      </div>
 
-	</body>
-	
+      <h2>Seanad</h2>
+      <div class="seatmap" id="seanad"></div>
+      <div class="seatrow">
+        <canvas id="seanad-pie" width="160" height="160"></canvas>
+        <div class="legend" id="seanad-legend"></div>
+      </div>
+
+      <h2>Constituencies</h2>
+      <div id="map" style="height:70vh; width:100%"></div>
+      <p style="font-size:0.85em">
+        Constituency boundaries: Tailte Éireann. Click a constituency to see its TDs.
+      </p>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script>
+    import 'leaflet/dist/leaflet.css';
+    import L from 'leaflet';
+    import Chart from 'chart.js/auto';
+
+    const colours = {
+      'Fianna Fáil': '#33cc33',
+      'Sinn Féin': '#004d1a',
+      'Fine Gael': '#2d8659',
+      'Independent': '#737373',
+      'Social Democrats': '#6600cc',
+      'Labour Party': '#ff0000',
+      'Independent Ireland': '#99ff99',
+      'People Before Profit-Solidarity': '#ff00ff',
+      'Aontú': '#608000',
+      'Green Party': '#396039',
+      '100% RDR': '#990000'
+    };
+
+    const colour = party => colours[party] ?? '#888';
+
+    fetch('https://api.civie.ie/API/sector/index')
+      .then(res => res.json())
+      .then(data => {
+        for (const house of ['dail', 'seanad']) {
+          const parties = data[house];
+          const total = parties.reduce((sum, p) => sum + p.count, 0);
+
+          document.getElementById(house).innerHTML = parties.map(p =>
+            `<span data-party="${p.party}" style="background:${colour(p.party)}"></span>`.repeat(p.count)
+          ).join('');
+
+          document.getElementById(house + '-legend').innerHTML = parties.map(p =>
+            `<div><span class="swatch" style="background:${colour(p.party)}"></span>${p.party}: ${p.count} (${(p.count / total * 100).toFixed(1)}%)</div>`
+          ).join('');
+
+          new Chart(document.getElementById(house + '-pie'), {
+            type: 'pie',
+            data: {
+              labels: parties.map(p => p.party),
+              datasets: [{
+                data: parties.map(p => p.count),
+                backgroundColor: parties.map(p => colour(p.party)),
+                borderWidth: 0
+              }]
+            },
+            options: {
+              responsive: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: c => `${c.label}: ${(c.raw / total * 100).toFixed(1)}%`
+                  }
+                }
+              }
+            }
+          });
+        }
+      });
+
+    const map = L.map('map', {
+      maxZoom: 10,
+      maxBoundsViscosity: 1
+    });
+
+    const nameOf = feature =>
+      feature.properties.ENG_NAME_VALUE.replace(/\s*\(\d+\)$/, '');
+
+    Promise.all([
+      fetch('/icons/constituency.json').then(res => res.json()),
+      fetch('https://api.civie.ie/API/sector/constituency').then(res => res.json())
+    ]).then(([geo, reps]) => {
+      const tdsOf = feature => reps[nameOf(feature)] ?? [];
+
+      const seatsByParty = feature => {
+        const counts = {};
+
+        tdsOf(feature).forEach(td => {
+          counts[td.party] = (counts[td.party] ?? 0) + 1;
+        });
+
+        return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+      };
+
+      const SIZE = 24;
+      let patterns = '';
+      const fills = new Map();
+
+      const fillFor = feature => {
+        const name = nameOf(feature);
+        if (fills.has(name)) return fills.get(name);
+
+        const shares = seatsByParty(feature);
+        let fill = '#888';
+
+        if (shares.length === 1) {
+          fill = colour(shares[0][0]);
+        }
+
+        if (shares.length > 1) {
+          const total = shares.reduce((sum, [, seats]) => sum + seats, 0);
+          let x = 0;
+
+          const stripes = shares.map(([party, seats]) => {
+            const width = SIZE * seats / total;
+            const rect = `<rect x="${x}" width="${width}" height="${SIZE}" fill="${colour(party)}"/>`;
+            x += width;
+            return rect;
+          }).join('');
+
+          const id = 'stripes-' + fills.size;
+
+          patterns += `<pattern id="${id}" patternUnits="userSpaceOnUse" width="${SIZE}" height="${SIZE}" patternTransform="rotate(45)">${stripes}</pattern>`;
+          fill = `url(#${id})`;
+        }
+
+        fills.set(name, fill);
+        return fill;
+      };
+
+      let layer;
+
+      layer = L.geoJSON(geo, {
+        style: feature => ({
+          color: '#8ab4f8',
+          weight: 1,
+          fillColor: fillFor(feature),
+          fillOpacity: 0.7
+        }),
+
+        onEachFeature: (feature, l) => {
+          l.bindPopup(
+            `<h3>${nameOf(feature)}</h3>` +
+            tdsOf(feature).map(td => `
+              <div>
+                <img src="https://data.oireachtas.ie/ie/oireachtas/member/id/${td.memberCode}/image/thumb" width="32" alt="">
+                ${td.name} (${td.party})
+              </div>
+            `).join('')
+          );
+
+          l.on('mouseover', () => l.setStyle({ fillOpacity: 0.9 }));
+          l.on('mouseout', () => layer.resetStyle(l));
+        }
+      }).addTo(map);
+
+      map.fitBounds(layer.getBounds());
+      map.setMinZoom(map.getZoom());
+      map.setMaxBounds(layer.getBounds().pad(0.1));
+
+      const svg = map.getPanes().overlayPane.querySelector('svg');
+
+      if (svg && patterns) {
+        svg.insertAdjacentHTML('afterbegin', `<defs>${patterns}</defs>`);
+      }
+    });
+  </script>
+</body>
 </html>
-<pressure id="pr" unit="hPa" value="1000.5"/>
