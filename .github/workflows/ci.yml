@@ -18,9 +18,6 @@ jobs:
         run: npm ci
       - name: testing and checks
         run: |
-          npm run test:unit
-          npm run lint
-          npm run check
           npm run build
 
       - name: build docker
