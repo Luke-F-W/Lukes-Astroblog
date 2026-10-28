@@ -24,7 +24,7 @@ jobs:
       - id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: deploy
+      - name: Deploy
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
@@ -38,7 +38,7 @@ jobs:
         with:
           task-definition: task-def.json
           container-name: Main
-          image: 341705376424.dkr.ecr.us-east-1.amazonaws.com/astro-blog:${{ github.sha }}
+          image: ${{ steps.login-ecr.outputs.registry }}/astro-blog:${{ github.sha }}
 
       - uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
